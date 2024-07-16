@@ -25,9 +25,13 @@ test_loader = DataLoader(test_data, batch_size=64)
 
 # 创建网络模型：从mdoel.py文件中导入设置好的模型，便于管理
 tudui = Tudui()
+if torch.cuda.is_available():
+    tudui = tudui.cuda()
 
 # 损失函数
 loss_fn = nn.CrossEntropyLoss()
+if torch.cuda.is_available():
+    loss_fn = loss_fn.cuda()
 
 # 优化器
 learning_rate = 1e-2
@@ -50,6 +54,9 @@ for i in range(epoch):
     tudui.train() #控制某些层
     for data in train_loader:
         imgs, targets = data
+        if torch.cuda.is_available():
+            imgs = imgs.cuda()
+            targets = targets.cuda()
         outputs = tudui(imgs)
         loss = loss_fn(outputs, targets)
 
@@ -73,6 +80,9 @@ for i in range(epoch):
     with torch.no_grad():
         for data in test_loader:
             imgs, targets = data
+            if torch.cuda.is_available():
+                imgs = imgs.cuda()
+                targets = targets.cuda()
             outputs = tudui(imgs)
             loss = loss_fn(outputs, targets)
             total_test_loss += loss.item()
